@@ -9,13 +9,21 @@ import {
 
 export class MongoDataApi {
   private baseUrl: string;
-  private apiKey: string;
+  private apiKey!: string;
   private database: string;
   private collection: string;
   private dataSource: string;
+  private accessToken!: string;
 
   constructor(opts: MongoDataApiOptions) {
-    this.apiKey = opts.apiKey;
+    if (opts.apiKey) {
+      this.apiKey = opts.apiKey;
+    } else if (opts.accessToken) {
+      this.accessToken = opts.accessToken;
+    } else {
+      throw new Error(`one of apiKey or accessToken is required`);
+    }
+
     this.database = opts.database;
     this.collection = opts.collection;
     this.dataSource = opts.dataSource;
@@ -37,7 +45,11 @@ export class MongoDataApi {
       const url = `${this.baseUrl}/${endpoint}`;
       const headers = {
         "Content-Type": "application/json",
-        "api-key": this.apiKey,
+        ...(this.accessToken
+          ? { Authorization: `Bearer ${this.accessToken}` }
+          : {
+              "api-key": this.apiKey,
+            }),
         "Access-Control-Request-Headers": "*",
       };
       const options = {

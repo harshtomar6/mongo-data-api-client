@@ -1,12 +1,15 @@
 export type MongoDataApiOptions = {
-  apiKey: string;
   database: string;
   collection: string;
   dataSource: string;
 } & (
   | { appId: string; apiBaseUrl?: string }
   | { apiBaseUrl: string; appId?: string }
-);
+) &
+  (
+    | { apiKey: string; accessToken?: string }
+    | { accessToken: string; apiKey?: string }
+  );
 
 export type FindOneOptions = {
   collection?: string;
